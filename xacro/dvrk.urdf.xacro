@@ -1,0 +1,160 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="dvrk">
+
+    <xacro:arg name="property_file" default="properties.yaml"/>
+	<xacro:arg name="mapping_file" default="taxel.yaml"/>
+
+    <xacro:include filename="ecm.urdf.xacro" />
+    <xacro:include filename="psm.urdf.xacro" />
+    <xacro:include filename="suj.urdf.xacro" /> 
+
+    <material name="skin">
+        <color rgba="1 0.859 0.674 1.0" />
+    </material>
+
+    <material name="white">
+        <color rgba="1 1 1 1"/>
+    </material>
+
+    <material name="blue">
+        <color rgba="0.153 0.572 0.961 0.8" />
+    </material>
+
+    <xacro:macro name="world">
+        <link name="world" />
+    </xacro:macro>
+
+    <xacro:world />
+
+	<xacro:suj_model prefix=""/>
+
+	<xacro:ecm_model prefix="ecm_" parent_link="suj_ecm_L3" xyz="0.103 0.173 0" rpy="-1.5708 0 ${-0.735398+3.14}"  />
+
+	<xacro:psm_model prefix="psm1_" parent_link="suj_psm1_L4" xyz= "0 0.3479 -0.0495" rpy="0 3.14159 0"/>
+
+    <xacro:psm_model prefix="psm2_" parent_link="suj_psm2_L4" xyz= "0 0.3479 -0.0495" rpy="0 3.14159 0"/>
+
+    <xacro:psm_model prefix="psm3_" parent_link="suj_psm3_L4" xyz= "0 0.3479 -0.0495" rpy="0 3.14159 0"/>
+
+
+	<!-- <xacro:include filename="human.urdf.xacro"/> -->
+    <!-- <xacro:human_model parent="world" /> -->
+
+
+	<!-- <xacro:include filename="hand.urdf.xacro"/> -->
+
+    <!-- side can be left | right | '' | '-' (meaning, fetch from mapping) -->
+	<!-- <xacro:arg name="prefix" default=""/>  -->
+    <!-- prefix serves as default for link_prefix -->
+	<!-- link prefix is needed for multiple hands within the TF tree -->
+	<!-- <xacro:arg name="link_prefix" default="$(arg prefix)"/> -->
+	<!-- joint_prefix is only needed when combining multiple hands into a single robot -->
+	<!-- <xacro:arg name="joint_prefix" default=""/>
+	<xacro:arg name="scale" default="1.0"/>
+	<xacro:arg name="side" default=""/>
+	<xacro:arg name="use_synergy" default="false"/>
+	<xacro:arg name="tactile_mapping" default=""/>
+	<xacro:arg name="tactile_channel" default="tactile glove"/>
+
+	<xacro:property name="side" value="$(arg side)"/>
+	<xacro:human_hand parent="world"
+	                  link_prefix="$(arg link_prefix)" joint_prefix="$(arg joint_prefix)"
+	                  scale="$(arg scale)"
+	                  side="$(arg side)" use_synergy="$(arg use_synergy)"
+	                  tactile_mapping="$(arg tactile_mapping)"
+	                  tactile_channel="'$(arg tactile_channel)'">
+		<origin xyz="0 0 0" rpy="0 0 0"/>
+	</xacro:human_hand> -->
+
+
+    <xacro:macro name="bed">
+        <link name="bed_link">
+            <visual>
+                <origin xyz="0 2 0.025" rpy="0 0 0" />
+                <geometry>
+                    <box size="1 2.5 0.05" />
+                </geometry>
+                <material name="blue" />
+            </visual>
+            <collision>
+                <origin xyz="0 2 0.05" rpy="0 0 0" />
+                <geometry>
+                    <box size="1 2.5 0.05" />
+                </geometry>
+                <material name="blue" />
+            </collision>
+        </link>
+    </xacro:macro>
+
+    <xacro:bed />
+
+    <xacro:macro name="bed_joint">
+        <joint name="bed_joint" type="fixed">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <parent link="world" />
+            <child link="bed_link" />
+        </joint>
+    </xacro:macro>
+
+    <xacro:bed_joint />
+
+    <xacro:macro name="body_link">
+        <link name="body">
+            <visual>
+                <origin xyz="0 0 0" rpy="0 0 0" />
+                <geometry>
+                    <mesh filename="package://urdf_dvrk/xacro/meshes/Body.stl" scale="0.1 0.1 0.1" />
+                </geometry>
+            </visual>
+            <collision>
+                <origin xyz="0 0 0" rpy="0 0 0" />
+                <geometry>
+                    <mesh filename="package://urdf_dvrk/xacro/meshes/Body.stl" scale="0.1 0.1 0.1" />
+                </geometry>
+            </collision>
+        </link>
+    </xacro:macro>
+
+    <xacro:body_link />
+
+    <xacro:macro name="body_joint">
+        <joint name="body_joint" type="fixed">
+            <origin xyz="0 3 0.24" rpy="0 0 ${pi}" />
+            <parent link="bed_link" />
+            <child link="body" />
+        </joint>
+    </xacro:macro>
+
+    <xacro:body_joint />
+
+    <xacro:macro name="eyeball_link">
+        <link name="eyeball">
+            <visual>
+                <origin xyz="0 0 0" rpy="0 0 0" />
+                <geometry>
+                    <mesh filename="package://urdf_dvrk/xacro/meshes/eyeball.stl" scale="0.01 0.01 0.01" />
+                </geometry>
+                <material name="white" />
+            </visual>
+            <collision>
+                <origin xyz="0 0 0" rpy="0 0 0" />
+                <geometry>
+                    <mesh filename="package://urdf_dvrk/xacro/meshes/eyeball.stl" scale="0.01 0.01 0.01" />
+                </geometry>
+                <material name="white" />
+            </collision>
+        </link>
+    </xacro:macro>
+
+    <xacro:eyeball_link />
+
+    <xacro:macro name="eyeball_joint">
+        <joint name="eyeball_joint" type="fixed">
+            <origin xyz="0.03 1.95 0.09" rpy="-${pi/2} 0 0" />
+            <parent link="body" />
+            <child link="eyeball" />
+        </joint>
+    </xacro:macro>
+
+    <xacro:eyeball_joint />
+</robot>
